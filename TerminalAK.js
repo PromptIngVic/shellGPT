@@ -61,14 +61,14 @@ term = is_terminal_open()
 if term:
     user_input = get_user_input()
     if user_input:
-        command = f'node /home/victor/Desktop/TerminalGPT/assistant.js "{user_input}" 2>/dev/null'
+        command = f'node /path/to/assistantTerminal.js "{user_input}" 2>/dev/null'
 
         # Debug: Print the command to ensure it's constructed correctly
         print(f"Executing command: {command}")
 
         # Execute the command and capture the output directly
         try:
-            result = subprocess.run(['node', '/home/victor/Desktop/TerminalGPT/assistant.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            result = subprocess.run(['node', '/path/to/assistantTerminal.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             assistant_response = result.stdout.strip() 
 
             # Debug: Print the assistant response to ensure it's captured correctly
