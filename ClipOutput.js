@@ -33,27 +33,27 @@ def copy_lines_after_pattern_from_terminal():
         # Teilen Sie den Inhalt in Zeilen auf
         lines = clipboard_content.split('\n')
 
-        # Finden Sie die Zeilen, die nach der Zeile mit "2>/dev/null" kommen, bis zur vorletzten Zeile
-        start_copying = False
-        filtered_lines = []
-        for line in lines:
+        # Finden Sie die Zeilen nach dem letzten Vorkommen von "2>/dev/null"
+        last_occurrence_index = -1
+        for index, line in enumerate(lines):
             if "2>/dev/null" in line:
-                start_copying = True
-                continue
-            if start_copying:
-                filtered_lines.append(line)
+                last_occurrence_index = index
 
-        # Entfernen Sie die letzte Zeile
-        if filtered_lines:
-            filtered_lines.pop()
+        if last_occurrence_index != -1:
+            filtered_lines = lines[last_occurrence_index + 1:]
+            # Entfernen Sie die letzte Zeile, falls vorhanden
+            if filtered_lines:
+                filtered_lines.pop()
 
-        # Kopieren Sie die gefilterten Zeilen in die Zwischenablage
-        if filtered_lines:
-            filtered_content = '\n'.join(filtered_lines)
-            subprocess.run(f"echo '{filtered_content}' | xclip -selection clipboard", shell=True)
-            notify(f"Copied to clipboard: {filtered_content}")
+            # Kopieren Sie die gefilterten Zeilen in die Zwischenablage
+            if filtered_lines:
+                filtered_content = '\n'.join(filtered_lines)
+                subprocess.run(f"echo '{filtered_content}' | xclip -selection clipboard", shell=True)
+                notify(f"Copied to clipboard: {filtered_content}")
+            else:
+                notify("No lines to copy after the last occurrence of '2>/dev/null'.")
         else:
-            notify("No lines to copy after pattern '2>/dev/null'.")
+            notify("Pattern '2>/dev/null' not found in the terminal output.")
     except Exception as e:
         notify(f"An error occurred: {e}")
 
