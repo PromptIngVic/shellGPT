@@ -68,7 +68,7 @@ def record_audio(output_filename='audio_input.wav'):
     wf.close()
 
     # Call James.py script with the output file
-    subprocess.run(['python3', '/home/victor/Desktop/TerminalGPT/James.py', output_filename])  # Ensure correct filename and path
+    subprocess.run(['python3', 'path/to/James.py', output_filename])  # Ensure correct filename and path
 
     # Delete the audio file after execution
     os.remove(output_filename)
