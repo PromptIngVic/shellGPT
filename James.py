@@ -22,7 +22,7 @@ except Exception as e:
 if transcription_text:
     try:
         result = subprocess.run(
-            f'node /home/victor/Desktop/TerminalGPT/Test.js "{transcription_text}"',
+            f'node path/to/Test.js "{transcription_text}"',
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
