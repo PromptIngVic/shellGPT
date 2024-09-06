@@ -57,40 +57,32 @@ def send_command_to_terminal(term, command):
             notify("Error", f"Error sending command to terminal: {e}")
             time.sleep(1)
 
+def capture_output_and_copy():
+    try:
+        result = subprocess.run(['node', '/home/victor/Desktop/TerminalGPT/assistant.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        assistant_response = result.stdout.strip()
+
+        # Copy the assistant response to the clipboard
+        if assistant_response:
+            process = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
+            process.communicate(input=assistant_response.encode())
+            notify("Info", "Response copied to clipboard.")
+        else:
+            notify("Info", "No output to copy.")
+    except Exception as e:
+        notify("Error", f"Error capturing output: {e}")
+
 term = is_terminal_open()
 if term:
     user_input = get_user_input()
     if user_input:
-        command = f'node /path/to/assistantTerminal.js "{user_input}" 2>/dev/null'
+        command = f'node /home/victor/Desktop/TerminalGPT/assistant.js "{user_input}" 2>/dev/null'
 
-        # Debug: Print the command to ensure it's constructed correctly
-        print(f"Executing command: {command}")
+        # Send the command to the terminal
+        send_command_to_terminal(term, command)
 
-        # Execute the command and capture the output directly
-        try:
-            result = subprocess.run(['node', '/path/to/assistantTerminal.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            assistant_response = result.stdout.strip() 
-
-            # Debug: Print the assistant response to ensure it's captured correctly
-            print(f"Assistant response: {assistant_response}")
-
-            # Add the command to copy the response to the clipboard
-            if assistant_response:
-                assistant_response_with_clipboard = f'{assistant_response}; echo "{assistant_response}" | xclip -selection clipboard'
-            else:
-                assistant_response_with_clipboard = assistant_response
-
-            # Send the command to the terminal
-            send_command_to_terminal(term, command)
-
-            # Copy the assistant response to the clipboard
-            if assistant_response:
-                process = subprocess.Popen(['xclip', '-selection', 'clipboard'], stdin=subprocess.PIPE)
-                process.communicate(input=assistant_response.encode())
-        except Exception as e:
-            notify("Error", f"Error executing assistant.js script: {e}")
-            print(f"Error executing assistant.js script: {e}")
-    else:
-        notify("Info", "Input was cancelled or empty.")
+        # Capture the output and copy it to clipboard
+        time.sleep(1)  # Adjust sleep time if needed to wait for the assistant response
+        capture_output_and_copy()
 else:
     notify("Error", "No terminal window detected. Please open a terminal and try again.")
