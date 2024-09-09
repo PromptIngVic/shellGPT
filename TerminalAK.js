@@ -46,6 +46,7 @@ def send_command_to_terminal(term, command):
 
             for window_id in window_ids:
                 subprocess.run(['xdotool', 'windowfocus', window_id])
+                # Hier wird sichergestellt, dass nur der eigentliche Befehl gesendet wird
                 subprocess.run(['xdotool', 'type', command])
                 subprocess.run(['xdotool', 'key', 'Return'])
                 return
@@ -57,10 +58,17 @@ def send_command_to_terminal(term, command):
             notify("Error", f"Error sending command to terminal: {e}")
             time.sleep(1)
 
-def capture_output_and_copy():
+def capture_output_and_copy(user_input):
     try:
-        result = subprocess.run(['node', '/home/victor/Desktop/TerminalGPT/assistant.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        result = subprocess.run(['node', '/home/victor/Desktop/Coding/TerminalGPT/assistant.js', user_input], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         assistant_response = result.stdout.strip()
+
+        # Entfernen der ``` Zeichen, falls sie vorhanden sind
+        if assistant_response.startswith("```") and assistant_response.endswith("```"):
+            assistant_response = assistant_response[3:-3].strip()
+
+        # Sicherstellen, dass keine Bash-Anweisung hinzugefügt wird
+        assistant_response = assistant_response.replace("bash", "").strip()
 
         # Copy the assistant response to the clipboard
         if assistant_response:
@@ -76,13 +84,13 @@ term = is_terminal_open()
 if term:
     user_input = get_user_input()
     if user_input:
-        command = f'node /home/victor/Desktop/TerminalGPT/assistant.js "{user_input}" 2>/dev/null'
+        command = f'node /home/victor/Desktop/Coding/TerminalGPT/assistant.js "{user_input}" 2>/dev/null'
 
         # Send the command to the terminal
         send_command_to_terminal(term, command)
 
         # Capture the output and copy it to clipboard
         time.sleep(1)  # Adjust sleep time if needed to wait for the assistant response
-        capture_output_and_copy()
+        capture_output_and_copy(user_input)
 else:
     notify("Error", "No terminal window detected. Please open a terminal and try again.")
